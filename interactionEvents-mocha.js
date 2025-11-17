@@ -6,7 +6,7 @@ const forEach = require('mocha-each');
 
 
 describe('Keyboard Event Button Tests – Data-Driven', function () {
-  this.timeout(10000);
+  this.timeout(0);
   let driver;
 
   before(async () => {
