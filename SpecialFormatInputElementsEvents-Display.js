@@ -8,8 +8,8 @@ const path = require("path");
 
 class SpecialFormatPage {
     constructor(driver) {
-        this.driver = driver;
-        this.url = "https://testpages.eviltester.com/pages/input-elements/special-formats/";
+     this.driver = driver;
+     this.url = "https://testpages.eviltester.com/pages/input-elements/special-formats/";
     }
 
     async open() {
@@ -24,7 +24,7 @@ class SpecialFormatPage {
         return this.driver.findElement(By.id(id));
     }
 
-  async setValue(inputId, value) {
+    async setValue(inputId, value) {
     const el = await this.input(inputId);
     await this.driver.executeScript("arguments[0].scrollIntoView(true);", el);
 
