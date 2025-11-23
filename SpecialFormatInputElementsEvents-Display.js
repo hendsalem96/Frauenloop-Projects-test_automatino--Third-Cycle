@@ -5,11 +5,22 @@ const { expect } = require('chai');
 const forEach = require('mocha-each');
 const path = require("path");
 
+const visibleInputIds = [
+  "color-input",
+  "datetime-local-input",
+  "date-input",
+  "month-input",
+  "week-input",
+  "time-input",
+  "date-input-min-max"
+];
 
 class SpecialFormatPage {
+
+    
     constructor(driver) {
-     this.driver = driver;
-     this.url = "https://testpages.eviltester.com/pages/input-elements/special-formats/";
+        this.driver = driver;
+        this.url = "https://testpages.eviltester.com/pages/input-elements/special-formats/";
     }
 
     async open() {
@@ -24,20 +35,24 @@ class SpecialFormatPage {
         return this.driver.findElement(By.id(id));
     }
 
-    async setValue(inputId, value) {
+async setValue(inputId, value) {
     const el = await this.input(inputId);
     await this.driver.executeScript("arguments[0].scrollIntoView(true);", el);
 
-    if (["color-input", "date-input", "datetime-local-input", "month-input", "week-input", "date-input-min-max"].includes(inputId)) {
-        await this.driver.executeScript(
-        "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input')); arguments[0].dispatchEvent(new Event('change'));",
-        el, value
-        );
+    const script = `
+        arguments[0].value = arguments[1];
+        arguments[0].dispatchEvent(new Event('input'));
+        arguments[0].dispatchEvent(new Event('change'));
+    `;
+
+    if (visibleInputIds.includes(inputId)) {
+        await this.driver.executeScript(script, el, value);
     } else {
         await el.clear();
         await el.sendKeys(value);
     }
 }
+
 
 
     async getSpanText(spanId) {
@@ -71,17 +86,7 @@ describe("Special Format Inputs Tests", function() {
     });
 
     it("should have all input elements visible", async () => {
-        const ids = [
-            "color-input",
-            "file-input",
-            "datetime-local-input",
-            "date-input",
-            "month-input",
-            "week-input",
-            "time-input",
-            "date-input-min-max"
-        ];
-        for (let id of ids) {
+         for (let id of visibleInputIds) {
             expect(await page.elementExists(id)).to.be.true;
         }
     });
