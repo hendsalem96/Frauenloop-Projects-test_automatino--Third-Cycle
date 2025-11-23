@@ -73,19 +73,22 @@ class CalendarPage {
 }
    // MOCHA TEST RUNNER
 
-
 describe("Calendar Form Tests", function () {
-    this.timeout(30000); 
+    this.timeout(30000);
 
     let driver;
     let page;
 
-    beforeEach(async () => {
+    before(async () => {
         driver = await new Builder().forBrowser("chrome").build();
         page = new CalendarPage(driver);
     });
 
     afterEach(async () => {
+        await driver.manage().deleteAllCookies();
+    });
+
+    after(async () => {
         await driver.quit();
     });
 
@@ -95,19 +98,19 @@ describe("Calendar Form Tests", function () {
         expect(await driver.findElement(page.submitButton).isDisplayed()).to.be.true;
     });
 
-    it("should show error when submitting empty form", async () => {
+    it("should show error on empty submit", async () => {
         await page.open();
         await page.submit();
-        const error = await page.getErrorText();
-        expect(error).to.include("Please fill out the form correctly.");
+        const err = await page.getErrorText();
+        expect(err).to.include("Please fill out the form correctly.");
     });
 
-    it("should show error for invalid date format", async () => {
+    it("should show error on invalid date", async () => {
         await page.open();
         await page.enterDate("12/24/2024");
         await page.submit();
-        const error = await page.getErrorText();
-        expect(error).to.include("Please fill out the form correctly.");
+        const err = await page.getErrorText();
+        expect(err).to.include("Please fill out the form correctly.");
     });
 
     it("should accept a valid date", async () => {
@@ -123,14 +126,7 @@ describe("Calendar Form Tests", function () {
         await page.enterDate("2024-12-24");
         await page.submit();
         await page.clickGoBack();
-
         const value = await page.getDateValue();
         expect(value).to.equal("");
     });
 });
-
-
-
-
-
-
